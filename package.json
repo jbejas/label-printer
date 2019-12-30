@@ -1,0 +1,17 @@
+{
+  "name": "label-printer-cert-validation",
+  "version": "1.0.0",
+  "description": "TMRW Label Printer Certificate Validation",
+  "main": "validate.js",
+  "scripts": {
+    "start": "node validate.js"
+  },
+  "author": "Sebastian Bejas",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-force-ssl": "^0.3.2",
+    "https": "^1.0.0",
+    "jsrsasign": "^8.0.12"
+  }
+}

@@ -1,0 +1,41 @@
+image: docker:latest
+services:
+    - docker:dind
+
+variables:
+    DOCKER_DRIVER: overlay
+
+stages:
+    - package
+
+docker-build-prod:
+    stage: package
+    script:
+        - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+        - apk add --no-cache jq
+        - OLD_VERSION=$(jq -r ".version" package.json)
+        - PATCH=$(date +%m%d%H%M) # MMDDhhmm
+        - VERSION=${OLD_VERSION}-${PATCH}
+        - sed -i "s/\"$OLD_VERSION/\"$VERSION/" package.json
+        - head package.json
+        - docker build --build-arg backend_url='/api' -t registry.gitlab.com/tmrw/eng/label-printer .
+        - docker tag registry.gitlab.com/tmrw/eng/label-printer registry.gitlab.com/tmrw/eng/label-printer:$VERSION
+        - docker push registry.gitlab.com/tmrw/eng/label-printer:$VERSION
+    only:
+        - master
+
+docker-build-dev:
+    stage: package
+    script:
+        - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+        - apk add --no-cache jq
+        - OLD_VERSION=$(jq -r ".version" package.json)
+        - VERSION=${OLD_VERSION}-SNAPSHOT
+        - head package.json
+        - sed -i "s/\"$OLD_VERSION/\"$VERSION/" package.json
+        - head package.json
+        - docker build --build-arg backend_url='/api' -t registry.gitlab.com/tmrw/eng/label-printer:$VERSION .
+        - docker push registry.gitlab.com/tmrw/eng/label-printer:$VERSION
+    only:
+        - development
+
