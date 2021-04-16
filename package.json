@@ -12,6 +12,6 @@
     "express": "^4.17.1",
     "express-force-ssl": "^0.3.2",
     "https": "^1.0.0",
-    "jsrsasign": "^8.0.12"
+    "jsrsasign": "^10.2.0"
   }
 }
